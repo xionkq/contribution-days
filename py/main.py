@@ -106,6 +106,6 @@ def count_contribution_days(image_path):
 
 
 # 测试
-image_path = "./contributions.png"
+image_path = "contributions.png"
 days = count_contribution_days(image_path)
 print(f"总共有 {days} 天有贡献")
