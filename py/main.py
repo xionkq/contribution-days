@@ -1,4 +1,11 @@
 from PIL import Image
+from flask import Flask, request, jsonify
+from io import BytesIO
+from flask_cors import CORS
+
+app = Flask(__name__)
+CORS(app, resources={r"/api/*": {"origins": "http://localhost:3000"}})
+
 
 global image
 global pixels
@@ -101,11 +108,20 @@ def count_contribution_days(image_path):
                 r, g, b = pixels[week + (grid_size // 2), y]
                 if is_contribution_pixel(r, g, b):
                     contribution_days += 1
-
     return contribution_days
 
 
-# 测试
-image_path = "contributions.png"
-days = count_contribution_days(image_path)
-print(f"总共有 {days} 天有贡献")
+@app.route('/api/upload', methods=['POST'])
+def upload():
+    file = request.files.get('file')
+    if not file:
+        return jsonify({"error": "No file uploaded"}), 400
+
+    # 读取文件二进制数据
+    days = count_contribution_days(BytesIO(file.read()))
+
+    return jsonify({"message": "File received successfully", "days": days, "code": 200})
+
+
+if __name__ == '__main__':
+    app.run(debug=True)
