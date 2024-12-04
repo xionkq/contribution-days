@@ -27,7 +27,7 @@ async function sendBlobDirectly(blobUrl: string) {
   const formData = new FormData();
   formData.append("file", blob, "uploaded_image.png");
 
-  const uploadResponse = await fetch("http://localhost:5000/api/upload", {
+  const uploadResponse = await fetch("https://contribution-days-backend.onrender.com/api/upload", {
     method: "POST",
     body: formData,
   });
