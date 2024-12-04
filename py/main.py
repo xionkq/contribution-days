@@ -4,7 +4,7 @@ from io import BytesIO
 from flask_cors import CORS
 
 app = Flask(__name__)
-CORS(app, resources={r"/api/*": {"origins": "https://xionkq.github.io/"}})
+CORS(app)  # 允许所有来源的跨域请求
 
 
 global image
