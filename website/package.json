@@ -1,6 +1,7 @@
 {
-  "name": "contribution-days-website",
+  "name": "website",
   "version": "1.0.0",
+  "homepage": "/contribution-days/",
   "main": "/src/index.tsx",
   "scripts": {
     "start": "react-scripts start",
