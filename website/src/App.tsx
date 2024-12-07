@@ -1,37 +1,19 @@
 import { useState } from "react";
+import UploadArea from "./Upload";
+import { sendBlobDirectly } from "./fetch";
 
-export default function UploadPage() {
-  const [preview, setPreview] = useState<string | undefined>(undefined);
+export default function App() {
+  const [days, setDays] = useState(0)
 
-  const handleFileChange = (e: any) => {
-    const file = e.target.files[0];
-    setPreview(URL.createObjectURL(file));
-    sendBlobDirectly(URL.createObjectURL(file))
-  };
+  const onUploadHandler = async (url: string) => {
+    const res = await sendBlobDirectly(url)
+    setDays(res.days)
+  }
 
   return (
-    <div>
-      <h1>Upload Image</h1>
-      <input type="file" onChange={handleFileChange} />
-      {preview && <img src={preview} alt="Preview" style={{ maxWidth: "200px" }} />}
+    <div style={{ maxWidth: "1000px", margin: "0 auto" }}>
+      <h1 style={{ marginTop: "100px" }}>Your contribution days are: {days}</h1>
+      <UploadArea onUpload={onUploadHandler} />
     </div>
   );
-}
-
-async function sendBlobDirectly(blobUrl: string) {
-  // 获取 Blob 数据
-  const response = await fetch(blobUrl);
-  const blob = await response.blob();
-
-  // 转换为 ArrayBuffer 并发送到后端
-  const formData = new FormData();
-  formData.append("file", blob, "uploaded_image.png");
-
-  const uploadResponse = await fetch("https://contribution-days-backend.onrender.com/api/upload", {
-    method: "POST",
-    body: formData,
-  });
-
-  const result = await uploadResponse.json();
-  console.log(result);
 }
