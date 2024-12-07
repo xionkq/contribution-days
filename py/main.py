@@ -6,7 +6,6 @@ from flask_cors import CORS
 app = Flask(__name__)
 CORS(app)  # 允许所有来源的跨域请求
 
-
 global image
 global pixels
 
@@ -59,28 +58,11 @@ def find_margin_top(start_x):
     return top
 
 
-def find_margin_left(start_y):
-    global pixels
-    global image
-
-    left = 0
-    width, height = image.size
-
-    for x in range(width):
-        r, g, b = pixels[x, start_y]  # 获取RGB值
-        if r == 255 and g == 255 and b == 255:
-            left += 1
-        else:
-            break
-
-    return left
-
-
-def count_contribution_days(image_path):
+def count_contribution_days(image_file):
     global image
     global pixels
     # 加载图像
-    image = Image.open(image_path)
+    image = Image.open(image_file)
 
     # 确保图像是RGB模式，如果是RGBA模式转为RGB
     if image.mode == 'RGBA':
@@ -117,12 +99,14 @@ def upload():
     if not file:
         return jsonify({"error": "No file uploaded"}), 400
 
-    # 读取文件二进制数据
-    days = count_contribution_days(BytesIO(file.read()))
-
-    return jsonify({"message": "File received successfully", "days": days, "code": 200})
+    try:
+        days = count_contribution_days(file.stream)
+        return jsonify({"message": "File received successfully", "days": days, "code": 200})
+    except Exception:
+        return jsonify({"message": "File parsing failure", "days": "parsing failure", "code": 500})
 
 
 if __name__ == '__main__':
     import os
+
     app.run(host="0.0.0.0", port=int(os.getenv("PORT", 5000)))
